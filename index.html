@@ -1,1 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Games • digitalviper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        
+        .game-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .game-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+        }
+        
+        .game-image {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .game-card:hover .game-image {
+            transform: scale(1.08);
+        }
+        
+        .play-button {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .game-card:hover .play-button {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
 
+    <!-- Navbar -->
+    <nav class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
+            <a href="https://digitalviper.github.io" class="flex items-center gap-3 text-2xl font-semibold">
+                <span class="text-emerald-500 text-3xl">◉</span>
+                digitalviper
+            </a>
+            <div class="flex items-center gap-8 text-sm font-medium">
+                <a href="#" class="text-emerald-400 hover:text-emerald-300">Games</a>
+                <a href="https://digitalviper.github.io" class="hover:text-zinc-300">Portfolio</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-6 py-12">
+        <!-- Hero -->
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center gap-2 bg-zinc-900 border border-emerald-500/30 text-emerald-400 text-xs font-medium px-4 py-2 rounded-3xl mb-6">
+                <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
+                100% FREE • NO ADS • INSTANT PLAY
+            </div>
+            <h1 class="text-6xl font-bold tracking-tighter mb-4">
+                Mini Games
+            </h1>
+            <p class="text-xl text-zinc-400 max-w-lg mx-auto">
+                Quick browser games. No downloads. Pure fun.
+            </p>
+        </div>
+
+        <!-- Games Grid -->
+        <div id="games-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Populated by JavaScript -->
+        </div>
+
+        <div class="text-center mt-16 text-zinc-500 text-sm">
+            Games are sorted by your most recent plays • Click to start
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-zinc-900 border-t border-zinc-800 py-12 text-center text-zinc-500 text-sm">
+        <div class="max-w-6xl mx-auto px-6">
+            Built with ❤️ and Grok • 
+            <a href="https://github.com/digitalviper" class="hover:text-white transition-colors" target="_blank">@digitalviper</a>
+        </div>
+    </footer>
+
+    <script>
+        // Generic games (no copyrighted or trademarked names)
+        let games = [
+            {
+                id: 1,
+                title: "Grid Match",
+                description: "Place marks on a 3x3 board and try to get three in a row. Play against AI or a friend.",
+                image: "https://picsum.photos/id/1015/600/400",
+                url: "https://digitalviper.github.io/grid-match",
+                lastClicked: Date.now() - 100000000
+            },
+            {
+                id: 2,
+                title: "Chain Collector",
+                description: "Guide the growing chain to collect items while avoiding walls and obstacles.",
+                image: "https://picsum.photos/id/201/600/400",
+                url: "https://digitalviper.github.io/chain-collector",
+                lastClicked: Date.now() - 200000000
+            },
+            {
+                id: 3,
+                title: "Pair Flip",
+                description: "Test your memory by flipping cards and finding matching pairs.",
+                image: "https://picsum.photos/id/237/600/400",
+                url: "https://digitalviper.github.io/pair-flip",
+                lastClicked: Date.now() - 300000000
+            },
+            {
+                id: 4,
+                title: "Paddle Clash",
+                description: "Fast-paced paddle game. First to reach the target score wins.",
+                image: "https://picsum.photos/id/180/600/400",
+                url: "https://digitalviper.github.io/paddle-clash",
+                lastClicked: Date.now() - 400000000
+            },
+            {
+                id: 5,
+                title: "Number Merge",
+                description: "Slide tiles to combine same numbers and reach the highest possible value.",
+                image: "https://picsum.photos/id/251/600/400",
+                url: "https://digitalviper.github.io/number-merge",
+                lastClicked: Date.now() - 500000000
+            }
+        ];
+
+        // Load click history from localStorage
+        function loadClickHistory() {
+            const saved = localStorage.getItem('gameClickHistory');
+            if (saved) {
+                const history = JSON.parse(saved);
+                games.forEach(game => {
+                    if (history[game.id]) {
+                        game.lastClicked = history[game.id];
+                    }
+                });
+            }
+        }
+
+        // Save click history
+        function saveClickHistory() {
+            const history = {};
+            games.forEach(game => {
+                history[game.id] = game.lastClicked;
+            });
+            localStorage.setItem('gameClickHistory', JSON.stringify(history));
+        }
+
+        // Sort games by last clicked (most recent first)
+        function sortGames() {
+            games.sort((a, b) => b.lastClicked - a.lastClicked);
+        }
+
+        // Render game cards
+        function renderGames() {
+            const container = document.getElementById('games-grid');
+            container.innerHTML = '';
+
+            sortGames();
+
+            games.forEach(game => {
+                const cardHTML = `
+                    <a href="${game.url}" target="_blank" 
+                       onclick="handleGameClick(${game.id}); return true;"
+                       class="game-card bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden group block">
+                        <div class="relative h-60 overflow-hidden">
+                            <img src="${game.image}" 
+                                 alt="${game.title}"
+                                 class="game-image w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
+                            <div class="absolute top-4 right-4 px-4 py-1.5 text-xs font-semibold bg-emerald-500 text-white rounded-2xl flex items-center gap-1.5 shadow-lg">
+                                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                                PLAY
+                            </div>
+                        </div>
+                        <div class="p-8">
+                            <h2 class="text-2xl font-semibold mb-3">${game.title}</h2>
+                            <p class="text-zinc-400 text-base leading-relaxed line-clamp-3">
+                                ${game.description}
+                            </p>
+                            <div class="mt-8 flex items-center gap-3 text-emerald-400 text-sm font-medium">
+                                <span class="flex-1">Start Game</span>
+                                <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-2"></i>
+                            </div>
+                        </div>
+                    </a>
+                `;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        // Handle game click
+        window.handleGameClick = function(id) {
+            const game = games.find(g => g.id === id);
+            if (game) {
+                game.lastClicked = Date.now();
+                saveClickHistory();
+                setTimeout(renderGames, 80);
+            }
+        };
+
+        // Initialize
+        function init() {
+            loadClickHistory();
+            renderGames();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
